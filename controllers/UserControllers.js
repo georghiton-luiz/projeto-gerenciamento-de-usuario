@@ -7,6 +7,7 @@ class UserControllers{
 
         this.onSubmit();
         this.onEdit();
+        this.selectAll();
     }
 
     onEdit(){
@@ -92,6 +93,8 @@ class UserControllers{
                 (content) => {
                     values.photo = content;
 
+                    this.insert(values);
+
                     this.addLine(values);
 
                     this.formEl.reset();
@@ -167,6 +170,44 @@ class UserControllers{
         return new User(user.name, user.gender, user.birth, user.country, user.email, user.password, user.photo, user.admin);
     }
 
+    getUserStorege(){
+        
+        let users = [];
+
+        if(sessionStorage.getItem("users")){
+            users = JSON.parse(sessionStorage.getItem("users"));
+        }
+
+        return users;
+
+    }
+
+    selectAll(){
+
+        let users = this.getUserStorege();
+
+        users.forEach(dataUser => {
+
+            let user = new User();
+
+            user.loadFromJSON(dataUser);
+
+            this.addLine(user);
+
+        });
+
+
+    }
+
+    insert(data){        
+
+        let users = this.getUserStorege();
+
+        users.push(data);
+
+        sessionStorage.setItem("users", JSON.stringify(users));
+    }
+
     addLine(dataUser){
 
         let tr = document.createElement("tr");
@@ -196,7 +237,7 @@ class UserControllers{
 
         tr.querySelector(".bnt-delete").addEventListener("click", e => {
             if(confirm("Deseja realmente excluir?")){
-                
+
                 tr.remove();
                 this.updateCount();
             }
